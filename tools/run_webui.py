@@ -32,7 +32,7 @@ def parse_args():
         default="checkpoints/openaudio-s1-mini/codec.pth",
     )
     parser.add_argument("--decoder-config-name", type=str, default="modded_dac_vq")
-    parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--half", action="store_true")
     parser.add_argument("--compile", action="store_true")
     parser.add_argument("--max-gradio-length", type=int, default=0)
@@ -44,17 +44,6 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     args.precision = torch.half if args.half else torch.bfloat16
-
-    # Check if MPS or CUDA is available
-    if torch.backends.mps.is_available():
-        args.device = "mps"
-        logger.info("mps is available, running on mps.")
-    elif torch.xpu.is_available():
-        args.device = "xpu"
-        logger.info("XPU is available, running on XPU.")
-    elif not torch.cuda.is_available():
-        logger.info("CUDA is not available, running on CPU.")
-        args.device = "cpu"
 
     logger.info("Loading Llama model...")
     llama_queue = launch_thread_safe_queue(

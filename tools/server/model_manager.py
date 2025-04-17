@@ -27,14 +27,6 @@ class ModelManager:
 
         self.precision = torch.half if half else torch.bfloat16
 
-        # Check if MPS or CUDA is available
-        if torch.backends.mps.is_available():
-            self.device = "mps"
-            logger.info("mps is available, running on mps.")
-        elif not torch.cuda.is_available():
-            self.device = "cpu"
-            logger.info("CUDA is not available, running on CPU.")
-
         # Load the TTS models
         self.load_llama_model(
             llama_checkpoint_path, self.device, self.precision, self.compile, self.mode
