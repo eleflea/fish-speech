@@ -6,6 +6,7 @@ from http import HTTPStatus
 import numpy as np
 import ormsgpack
 import soundfile as sf
+from pydub import AudioSegment
 import torch
 from kui.asgi import (
     Body,
@@ -158,12 +159,28 @@ async def tts(req: Annotated[ServeTTSRequest, Body(exclusive=True)]):
     else:
         fake_audios = next(inference(req, engine))
         buffer = io.BytesIO()
-        sf.write(
-            buffer,
-            fake_audios,
-            sample_rate,
-            format=req.format,
-        )
+        if req.format == "m4a":
+            if isinstance(fake_audios, np.ndarray):
+                fake_audios = (fake_audios * 32767).astype(np.int16).tobytes()
+            audio_segment = AudioSegment(
+                fake_audios,
+                frame_rate=sample_rate,
+                sample_width=2,  # int16 -> 2 bytes
+                channels=1,
+            )
+            ffmpeg_params = [
+                "-c:a", "libfdk_aac",
+                "-b:a", "32k",
+                "-movflags", "+faststart",
+            ]
+            audio_segment.export(buffer, format="ipod", parameters=ffmpeg_params)  # "ipod" 是 m4a (AAC) 的别名
+        else:
+            sf.write(
+                buffer,
+                fake_audios,
+                sample_rate,
+                format=req.format,
+            )
 
         return StreamResponse(
             iterable=buffer_to_async_generator(buffer.getvalue()),

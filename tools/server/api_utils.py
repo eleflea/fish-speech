@@ -26,7 +26,7 @@ def parse_args():
         default="checkpoints/fish-speech-1.5/firefly-gan-vq-fsq-8x1024-21hz-generator.pth",
     )
     parser.add_argument("--decoder-config-name", type=str, default="firefly_gan_vq")
-    parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--half", action="store_true")
     parser.add_argument("--compile", action="store_true")
     parser.add_argument("--max-text-length", type=int, default=0)
@@ -72,5 +72,7 @@ def get_content_type(audio_format):
         return "audio/flac"
     elif audio_format == "mp3":
         return "audio/mpeg"
+    elif audio_format == "m4a":
+        return "audio/mp4"
     else:
         return "application/octet-stream"
