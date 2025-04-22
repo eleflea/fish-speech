@@ -59,6 +59,7 @@ class Health(HttpView):
 async def vqgan_encode(req: Annotated[ServeVQGANEncodeRequest, Body(exclusive=True)]):
     # Get the model from the app
     model_manager: ModelManager = request.app.state.model_manager
+    model_manager.ensure_inference_engine()
     decoder_model = model_manager.decoder_model
 
     # Encode the audio
@@ -77,6 +78,7 @@ async def vqgan_encode(req: Annotated[ServeVQGANEncodeRequest, Body(exclusive=Tr
 async def vqgan_decode(req: Annotated[ServeVQGANDecodeRequest, Body(exclusive=True)]):
     # Get the model from the app
     model_manager: ModelManager = request.app.state.model_manager
+    model_manager.ensure_inference_engine()
     decoder_model = model_manager.decoder_model
 
     # Decode the audio
@@ -98,6 +100,7 @@ async def tts(req: Annotated[ServeTTSRequest, Body(exclusive=True)]):
     # Get the model from the app
     app_state = request.app.state
     model_manager: ModelManager = app_state.model_manager
+    model_manager.ensure_inference_engine()
     engine = model_manager.tts_inference_engine
     sample_rate = engine.decoder_model.sample_rate
 
