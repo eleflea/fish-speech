@@ -89,6 +89,7 @@ class API(ExceptionHandler):
             llama_checkpoint_path=self.args.llama_checkpoint_path,
             decoder_checkpoint_path=self.args.decoder_checkpoint_path,
             decoder_config_name=self.args.decoder_config_name,
+            idle_timeout=self.args.idle_timeout,
         )
 
         logger.info(f"Startup done, listening server at http://{self.args.listen}")
