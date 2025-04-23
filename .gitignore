@@ -111,3 +111,4 @@ ffprobe.exe
 # ----------
 /*.test.sh
 asr-label*
+api_server.sh
