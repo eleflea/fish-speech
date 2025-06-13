@@ -36,6 +36,10 @@ class ModelManager:
         self.lock = threading.Lock()
         self.unload_timer = None
 
+        if self.idle_timeout <= 0:
+            self.load_inference_engine()
+
+    def load_inference_engine(self) -> None:
         # Load the TTS models
         self.load_llama_model(
             self.llama_checkpoint_path, self.device, self.precision, self.compile, self.mode
@@ -55,6 +59,9 @@ class ModelManager:
             self.reset_unload_timer()
             return
 
+        with self.lock:
+            if not hasattr(self, "tts_inference_engine"):
+                self.load_inference_engine()
         self.reset_unload_timer()
 
     def unload_inference_engine(self) -> None:
