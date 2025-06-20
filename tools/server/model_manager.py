@@ -38,6 +38,10 @@ class ModelManager:
 
         if self.idle_timeout <= 0:
             self.load_inference_engine()
+        
+            # Warm up the models
+            if self.mode == "tts":
+                self.warm_up(self.tts_inference_engine)
 
     def load_inference_engine(self) -> None:
         # Load the TTS models
